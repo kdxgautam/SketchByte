@@ -3,6 +3,7 @@ import { Geist, Geist_Mono,Outfit } from "next/font/google";
 import "./globals.css";
 import Provider from "./provider";
 import { Toaster } from "@/components/ui/sonner";
+import ClickSpark from '@/components/ui/clickSpark';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Provider>
+          
           {children}
           <Toaster/>
 
