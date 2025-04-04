@@ -12,12 +12,16 @@ import { useAuthContext } from "./provider";
 import ClickSpark from "@/components/ui/clickSpark";
 import Footer from "./_components/Footer";
 import Hero from "./_components/Hero";
+import { CardSpotlight } from "@/components/ui/card-spotlight";
+import  Features  from "./_components/Features";
+import { TestContext } from "node:test";
+import Testimonial from "./_components/Testimonial";
 
 function HeroSectionOne() {
   return (
     <div className="relative bg-black flex flex-col items-center justify-center overflow-y-auto no-scrollbar">
       <ClickSpark
-        sparkColor="#EAB253"
+        sparkColor="#fff"
         sparkSize={10}
         sparkRadius={15}
         sparkCount={8}
@@ -33,7 +37,12 @@ function HeroSectionOne() {
       <div className="absolute inset-x-0 bottom-0 h-px w-full bg-neutral-800/80">
         <div className="absolute mx-auto h-px w-40 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
       </div> */}
+      <CardSpotlight>
         <Hero/>
+       
+        </CardSpotlight>
+        <Features/>
+        <Testimonial/>
         
         {/* Footer Section */}
         <Footer/>

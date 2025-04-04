@@ -12,9 +12,11 @@ import { useAuthContext } from "../provider";
 
 
 
+
 const Hero = () => {
   return (
-    <div className="px-4 py-10 md:py-20">
+    <div className="px-4 py-10 md:py-20 h-[80vh]">
+       
     <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold md:text-4xl lg:text-7xl text-slate-300">
       {"Launch your website in hours, not days"
         .split(" ")
@@ -74,6 +76,7 @@ const Hero = () => {
         Contact Support
       </button>
     </motion.div>
+    
     
   </div>
   
