@@ -32,6 +32,8 @@ function Provider({
     )
 }
 
+
+
 // Custom hook to use auth
 export const useAuthContext = (): AuthContextType => {
     const context = useContext(AuthContext);

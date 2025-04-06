@@ -3,17 +3,20 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-card";
+import { BackgroundLines } from "@/components/ui/backgroundLines";
 
 export default function InfiniteMovingCardsDemo() {
   return (
-    <div className="h-[40rem] rounded-lg flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
+    // <BackgroundLines>
+    <div className="h-[90vh] w-screen rounded-lg flex flex-col antialiased bg-black items-center justify-center relative overflow-hidden">
+      
       <motion.h2 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0,scale:0.7 ,y: 10 }}
+        whileInView={{ opacity: 1, y: 0,scale:1.1 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold md:text-3xl lg:text-4xl text-slate-300 mb-8"
+        className="relative flex z-10 mx-auto px-4   max-w-4xl text-center text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl text-slate-300 mb-20"
       >
-        What our users say
+        What our Customers say
       </motion.h2>
       
       <motion.div
@@ -21,13 +24,21 @@ export default function InfiniteMovingCardsDemo() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
+        
         <InfiniteMovingCards
           items={testimonials}
           direction="right"
-          speed="slow"
+          speed="normal"
+        />
+         <InfiniteMovingCards
+          items={testimonials}
+          
+          speed="normal"
         />
       </motion.div>
+      
     </div>
+   
   );
 }
 

@@ -16,6 +16,7 @@ import { CardSpotlight } from "@/components/ui/card-spotlight";
 import  Features  from "./_components/Features";
 import { TestContext } from "node:test";
 import Testimonial from "./_components/Testimonial";
+import { BackgroundLines } from "@/components/ui/backgroundLines";
 
 function HeroSectionOne() {
   return (
@@ -41,8 +42,17 @@ function HeroSectionOne() {
         <Hero/>
        
         </CardSpotlight>
+
+
+        
+
+        
+        
         <Features/>
+        
+       
         <Testimonial/>
+        
         
         {/* Footer Section */}
         <Footer/>

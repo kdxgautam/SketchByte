@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/configs/firebaseConfig";
 import ProfileAvatar from "@/app/_components/ProfileAvatar";
 import { useAuthContext } from "../provider";
+import { Cover } from "@/components/ui/cover";
 
 
 
@@ -15,10 +16,10 @@ import { useAuthContext } from "../provider";
 
 const Hero = () => {
   return (
-    <div className="px-4 py-10 md:py-20 h-[80vh]">
+    <div className="flex flex-col justify-center items-center  h-[80vh]">
        
-    <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold md:text-4xl lg:text-7xl text-slate-300">
-      {"Launch your website in hours, not days"
+    <h1 className="relative z-10 min mx-auto max-w-4xl text-center text-2xl font-bold md:text-4xl lg:text-7xl text-slate-300">
+      {"Launch your website in Hours, not days"
         .split(" ")
         .map((word, index) => (
           <motion.span
@@ -30,9 +31,9 @@ const Hero = () => {
               delay: index * 0.1,
               ease: "easeInOut",
             }}
-            className="mr-2 inline-block"
+            className="mr-2 inline-block my-4"
           >
-            {word}
+            {word==="Hours," ? <Cover >Hours,</Cover>:word}
           </motion.span>
         ))}
     </h1>
