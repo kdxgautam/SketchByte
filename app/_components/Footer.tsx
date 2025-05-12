@@ -3,12 +3,21 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 // Moving Border Gradient Component
+import { ReactNode } from 'react';
+
+interface MovingBorderGradientProps {
+  children: ReactNode;
+  borderWidth?: number;
+  gradientColors?: string[];
+  animationSpeed?: number;
+}
+
 const MovingBorderGradient = ({ 
   children, 
   borderWidth = 2,
   gradientColors = ['#8b5cf6', '#ec4899', '#8b5cf6'],
   animationSpeed = 50
-}) => {
+}: MovingBorderGradientProps) => {
   const [position, setPosition] = useState(0);
   
   useEffect(() => {

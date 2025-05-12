@@ -1,12 +1,18 @@
+import React, { useEffect, useState, ReactNode } from 'react';
 
-import React, { useEffect, useState } from 'react';
+interface MovingBorderGradientProps {
+  children: ReactNode;
+  borderWidth?: number;
+  gradientColors?: string[];
+  animationSpeed?: number;
+}
 
 const MovingBorderGradient = ({ 
   children, 
   borderWidth = 2,
   gradientColors = ['#f0f', '#0ff', '#f0f'],
   animationSpeed = 50
-}) => {
+}: MovingBorderGradientProps) => {
   const [position, setPosition] = useState(0);
   
   useEffect(() => {
@@ -18,7 +24,6 @@ const MovingBorderGradient = ({
     return () => clearInterval(intervalId);
   }, [animationSpeed]);
 
-  // Create the gradient color string
   const gradientString = `linear-gradient(90deg, ${gradientColors.join(', ')})`;
 
   return (
@@ -49,6 +54,5 @@ const MovingBorderGradient = ({
     </div>
   );
 };
-
 
 export default MovingBorderGradient;
