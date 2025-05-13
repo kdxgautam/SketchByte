@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import Image from "next/image";
 import React, {
   createContext,
   useState,
@@ -9,7 +7,9 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { cn } from "@/lib/utils";
 
+// Define the context
 const MouseEnterContext = createContext<
   [boolean, React.Dispatch<React.SetStateAction<boolean>>] | undefined
 >(undefined);
@@ -45,11 +45,12 @@ export const CardContainer = ({
     setIsMouseEntered(false);
     containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
   };
+  
   return (
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
       <div
         className={cn(
-          " flex items-center justify-center -translate-y-10",
+          "flex items-center justify-center -translate-y-10",
           containerClassName
         )}
         style={{
@@ -86,7 +87,7 @@ export const CardBody = ({
   return (
     <div
       className={cn(
-        " [transform-style:preserve-3d]  [&>*]:[transform-style:preserve-3d]",
+        "[transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]",
         className
       )}
     >
@@ -95,57 +96,8 @@ export const CardBody = ({
   );
 };
 
-export const CardItem = ({
-  as: Tag = "div",
-  children,
-  className,
-  translateX = 0,
-  translateY = 0,
-  translateZ = 0,
-  rotateX = 0,
-  rotateY = 0,
-  rotateZ = 0,
-  ...rest
-}: {
-  as?: React.ElementType;
-  children: React.ReactNode;
-  className?: string;
-  translateX?: number | string;
-  translateY?: number | string;
-  translateZ?: number | string;
-  rotateX?: number | string;
-  rotateY?: number | string;
-  rotateZ?: number | string;
-  [key: string]: any;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [isMouseEntered] = useMouseEnter();
 
-  useEffect(() => {
-    handleAnimations();
-  }, [isMouseEntered]);
 
-  const handleAnimations = () => {
-    if (!ref.current) return;
-    if (isMouseEntered) {
-      ref.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
-    } else {
-      ref.current.style.transform = `translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
-    }
-  };
-
-  return (
-    <Tag
-      ref={ref}
-      className={cn("w-fit transition duration-200 ease-linear", className)}
-      {...rest}
-    >
-      {children}
-    </Tag>
-  );
-};
-
-// Create a hook to use the context
 export const useMouseEnter = () => {
   const context = useContext(MouseEnterContext);
   if (context === undefined) {
@@ -153,3 +105,73 @@ export const useMouseEnter = () => {
   }
   return context;
 };
+interface CardItemProps extends React.HTMLAttributes<HTMLElement> {
+  as?: React.ElementType;
+  translateX?: number | string;
+  translateY?: number | string;
+  translateZ?: number | string;
+  rotateX?: number | string;
+  rotateY?: number | string;
+  rotateZ?: number | string;
+}
+export const CardItem = React.forwardRef((props: any, ref: any) => {
+  const {
+    as: Component = "div",
+    children,
+    className,
+    translateX = 0,
+    translateY = 0,
+    translateZ = 0,
+    rotateX = 0,
+    rotateY = 0,
+    rotateZ = 0,
+    ...rest
+  } = props;
+
+  const innerRef = React.useRef<HTMLElement>(null);
+
+  // Combine forwarded ref and local ref
+  const combinedRef = (node: any) => {
+    if (ref) {
+      if (typeof ref === "function") {
+        ref(node);
+      } else {
+        ref.current = node;
+      }
+    }
+    innerRef.current = node;
+  };
+
+  const [isMouseEntered] = useMouseEnter();
+
+  React.useEffect(() => {
+    if (!innerRef.current) return;
+    if (isMouseEntered) {
+      innerRef.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
+    } else {
+      innerRef.current.style.transform = `translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`;
+    }
+  }, [isMouseEntered, translateX, translateY, translateZ, rotateX, rotateY, rotateZ]);
+
+  // Create new props object and explicitly exclude 'children'
+  const componentProps = { ...rest, className: cn("w-fit transition duration-200 ease-linear", className) };
+
+  // Render with children explicitly passed as children, not as a prop
+  return React.createElement(
+    Component,
+    { ...componentProps, ref: combinedRef },
+    children
+  );
+});
+
+CardItem.displayName = "CardItem";
+
+
+// // Create a hook to use the context
+// export const useMouseEnter = () => {
+//   const context = useContext(MouseEnterContext);
+//   if (context === undefined) {
+//     throw new Error("useMouseEnter must be used within a MouseEnterProvider");
+//   }
+//   return context;
+// };
