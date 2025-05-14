@@ -1,10 +1,12 @@
 "use client"
 import { auth } from '@/configs/firebaseConfig';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 import React from 'react'
 
 function Authentication({ children }: any) {
     const provider = new GoogleAuthProvider();
+    const router = useRouter()
 
     const onButtonPress = () => {
         signInWithPopup(auth, provider)
@@ -15,6 +17,7 @@ function Authentication({ children }: any) {
                 // The signed-in user info.
                 const user = result.user;
                 console.log(user);
+                router.push('/dashboard')
                 // IdP data available using getAdditionalUserInfo(result)
                 // ...
             }).catch((error) => {

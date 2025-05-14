@@ -14,7 +14,7 @@ export default function InfiniteMovingCardsDemo() {
         initial={{ opacity: 0,scale:0.7 ,y: 10 }}
         whileInView={{ opacity: 1, y: 0,scale:1.1 }}
         transition={{ duration: 0.5 }}
-        className="relative flex z-10 mx-auto px-4   max-w-4xl text-center text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl text-slate-300 mb-20"
+        className="relative flex z-10 mx-auto px-4 mt-16  max-w-4xl text-center text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl text-slate-300 mb-20"
       >
         What our Customers say
       </motion.h2>
@@ -28,12 +28,12 @@ export default function InfiniteMovingCardsDemo() {
         <InfiniteMovingCards
           items={testimonials}
           direction="right"
-          speed="normal"
+          speed="slow"
         />
          <InfiniteMovingCards
           items={testimonials}
           
-          speed="normal"
+          speed="slow"
         />
       </motion.div>
       
