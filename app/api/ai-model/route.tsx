@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
+      const encoder = new TextEncoder();
+      let sseBuffer = "";
 
       if (!reader) {
         controller.close();
@@ -48,26 +50,43 @@ export async function POST(req: NextRequest) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          // Decode incoming chunk
-          const chunkText = decoder.decode(value, { stream: true });
-
-          // OpenRouter sends JSON responses, so parse the data
-          const lines = chunkText.trim().split("\n");
+          // Keep a rolling buffer because SSE lines can be split across network chunks.
+          sseBuffer += decoder.decode(value, { stream: true });
+          const lines = sseBuffer.split("\n");
+          sseBuffer = lines.pop() ?? "";
 
           for (const line of lines) {
-            // console.log(lines)
-            if (!line.startsWith("data: ")) continue; // Ignore non-data lines
+            if (!line.startsWith("data: ")) continue;
 
-            const jsonStr = line.replace("data: ", "").trim();
-            if (jsonStr === "[DONE]") break;
+            const jsonStr = line.slice(6).trim();
+            if (!jsonStr) continue;
+            if (jsonStr === "[DONE]") continue;
 
             try {
               const json = JSON.parse(jsonStr);
               const text = json.choices?.[0]?.delta?.content || "";
-              console.log(text);
-              controller.enqueue(new TextEncoder().encode(text));
+              if (text) {
+                controller.enqueue(encoder.encode(text));
+              }
             } catch (error) {
-              console.error("JSON Parse Error:", error);
+              console.error("JSON Parse Error:", error, jsonStr);
+            }
+          }
+        }
+
+        // Flush any final line left in the buffer.
+        const tail = sseBuffer.trim();
+        if (tail.startsWith("data: ")) {
+          const jsonStr = tail.slice(6).trim();
+          if (jsonStr && jsonStr !== "[DONE]") {
+            try {
+              const json = JSON.parse(jsonStr);
+              const text = json.choices?.[0]?.delta?.content || "";
+              if (text) {
+                controller.enqueue(encoder.encode(text));
+              }
+            } catch (error) {
+              console.error("JSON Parse Error:", error, jsonStr);
             }
           }
         }

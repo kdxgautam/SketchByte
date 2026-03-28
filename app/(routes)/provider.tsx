@@ -17,31 +17,37 @@ function DashboardProvider({
     const router = useRouter();
 
     useEffect(() => {
-        if (!user?.user && user.user) return router.replace('/')
+        if (!user?.user) {
+            router.replace('/')
+            return
+        }
 
-
-        user?.user && checkUser()
+        checkUser()
 
     }, [user])
 
 
     const checkUser = async () => {
-        
-        const result = await axios.post('/api/user', {
-            userName: user?.user?.displayName,
-            userEmail: user?.user?.email
-        });
-        console.log(user);
+        try {
+            const normalizedEmail = user?.user?.email?.trim().toLowerCase()
+            if (!normalizedEmail) return
+
+            await axios.post('/api/user', {
+                userName: user?.user?.displayName,
+                userEmail: normalizedEmail
+            });
+        } catch (error) {
+            console.error('Failed to check/create user:', error)
+        }
     }
 
 
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main className='w-full'>
+            <main className='w-full min-h-screen bg-[#131313] text-[#e2e2e2]'>
                 <AppHeader />
-                {/* <SidebarTrigger /> */}
-                <div className='p-10'>{children}</div>
+                <div className='px-6 py-8 md:px-9'>{children}</div>
             </main>
         </SidebarProvider>
 

@@ -1,6 +1,6 @@
 import { db } from "@/configs/db";
 import { usersTable, WireframeToCodeTable } from "@/configs/schema";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -10,26 +10,34 @@ export async function POST(req: NextRequest) {
     const creditResult = await db.select().from(usersTable)
         .where(eq(usersTable.email, email));
 
-    if (creditResult[0]?.credits && creditResult[0]?.credits > 0) {
+    let userCredits = creditResult[0]?.credits ?? 0;
 
-        const result = await db.insert(WireframeToCodeTable).values({
-            uid: uid.toString(),
-            description: description,
-            imageUrl: imageUrl,
-            model: model,
-            createdBy: email
-        }).returning({ id: WireframeToCodeTable.id });
+    if (creditResult.length === 0) {
+        const insertedUser = await db.insert(usersTable).values({
+            name: email?.split('@')[0] ?? 'User',
+            email: email,
+            credits: 3,
+        }).returning();
 
-        // Update user credits
-        const data = await db.update(usersTable).set({
-            credits: creditResult[0]?.credits - 1
+        userCredits = insertedUser[0]?.credits ?? 3;
+    }
+
+    const result = await db.insert(WireframeToCodeTable).values({
+        uid: uid.toString(),
+        description: description,
+        imageUrl: imageUrl,
+        model: model,
+        createdBy: email
+    }).returning({ id: WireframeToCodeTable.id });
+
+    // Keep internal credit tracking, but do not block generation when balance reaches zero.
+    if (userCredits > 0) {
+        await db.update(usersTable).set({
+            credits: userCredits - 1
         }).where(eq(usersTable.email, email));
+    }
 
-        return NextResponse.json(result);
-    }
-    else {
-        return NextResponse.json({ 'error': 'Not enough credits' })
-    }
+    return NextResponse.json(result);
 }
 
 export async function GET(req: Request) {
@@ -67,4 +75,30 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(result);
 
+}
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const { uid, email } = await req.json();
+
+        if (!uid || !email) {
+            return NextResponse.json({ error: 'Missing required fields: uid, email' }, { status: 400 });
+        }
+
+        const result = await db.delete(WireframeToCodeTable)
+            .where(and(
+                eq(WireframeToCodeTable.uid, uid.toString()),
+                eq(WireframeToCodeTable.createdBy, email.toString())
+            ))
+            .returning({ uid: WireframeToCodeTable.uid });
+
+        if (result.length === 0) {
+            return NextResponse.json({ error: 'Design not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, message: 'Design deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting design:', error);
+        return NextResponse.json({ error: 'Failed to delete design' }, { status: 500 });
+    }
 }

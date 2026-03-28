@@ -1,28 +1,54 @@
 import React from 'react'
-import { RECORD } from '../[uid]/page'
 import Image from 'next/image'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { RefreshCcw } from 'lucide-react'
+import { Loader2, RefreshCcw, Save } from 'lucide-react'
 
-function SelectionDetail({ record, regenrateCode, isReady }: any) {
+function SelectionDetail({ record, regenrateCode, onSaveCode, isReady, loading }: any) {
     return record && (
-        <div className='p-5 bg-gray-100  rounded-lg'>
-            <h2 className='font-bold my-2'>Wireframe</h2>
-            <Image src={record?.imageUrl} alt='Wireframe' width={300} height={400}
-                className='rounded-lg object-contain h-[200px] w-full border  border-dashed p-2 bg-white'
-            />
+        <aside className='space-y-3'>
+            <div className='rounded-xl border border-[#4d4353]/20 bg-[#111114] p-3'>
+                <div className='mb-3 flex items-center justify-between border-b border-[#4d4353]/20 pb-2'>
+                    <h2 className='text-[10px] font-semibold uppercase tracking-[0.22em] text-[#998d9e]'>Wireframe</h2>
+                    <span className='text-xs text-[#4b4252]'>•••</span>
+                </div>
 
-            <h2 className='font-bold mt-4 mb-2'>AI Model</h2>
-            <Input defaultValue={record?.model} disabled={true} className='bg-white' />
+                <div className='rounded-lg border border-dashed border-[#4d4353]/30 bg-[#0b0b0d] p-2'>
+                    <Image
+                        src={record?.imageUrl}
+                        alt='Wireframe'
+                        width={300}
+                        height={400}
+                        className='h-[540px] w-full rounded-md object-cover'
+                    />
+                </div>
 
-            <h2 className='font-bold mt-4 mb-2'>Description</h2>
-            <Textarea defaultValue={record?.description} disabled={true}
-                className='bg-white h-[180px]' />
+                <div className='mt-3 rounded-lg border border-[#4d4353]/20 bg-[#17171b] p-3'>
+                    <p className='text-xs font-semibold text-[#d0c2d5]'>Layout: Dashboard v2.1</p>
+                    <p className='mt-1 text-[11px] text-[#756980]'>Last modified: 2 mins ago</p>
+                </div>
+            </div>
 
-            <Button className='mt-7 w-full' disabled={!isReady} onClick={() => regenrateCode()} > <RefreshCcw /> Regenerate Code</Button>
-        </div>
+            <div className='rounded-xl border border-[#4d4353]/20 bg-[#111114] p-3 space-y-2'>
+                <Button
+                    className='h-11 w-full rounded-md bg-gradient-to-r from-[#c69ceb] to-[#9d4edd] text-xs font-bold uppercase tracking-[0.14em] text-[#2e004e] hover:opacity-95'
+                    disabled={!isReady || loading}
+                    onClick={() => onSaveCode()}
+                >
+                    <Save className='h-4 w-4' />
+                    Save Code
+                </Button>
+
+                <Button
+                    variant='outline'
+                    className='h-11 w-full rounded-md border-[#4d4353]/30 bg-[#17171b] text-xs font-bold uppercase tracking-[0.12em] text-[#d0c2d5] hover:bg-[#1f1f22] hover:text-[#f2daff]'
+                    disabled={!isReady || loading}
+                    onClick={() => regenrateCode()}
+                >
+                    {loading ? <Loader2 className='h-4 w-4 animate-spin' /> : <RefreshCcw className='h-4 w-4' />}
+                    Regenerate Code
+                </Button>
+            </div>
+        </aside>
     )
 }
 
